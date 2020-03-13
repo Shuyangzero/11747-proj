@@ -18,7 +18,9 @@ from torch.utils.data.distributed import DistributedSampler
 from torch.utils.data.sampler import RandomSampler, SequentialSampler
 from tqdm import tqdm, trange
 
-import tokenization
+# import tokenization
+import tokenization_new as tokenization
+
 from modeling import BertConfig, BertForSequenceClassification
 from optimization import BERTAdam
 # from processor import (Semeval_NLI_B_Processor, Semeval_NLI_M_Processor,
