@@ -1,5 +1,3 @@
-"""Tokenization classes."""
-
 from __future__ import absolute_import, division, print_function
 
 import collections
@@ -53,14 +51,14 @@ def _is_punctuation(char):
     if ((cp >= 33 and cp <= 47) or (cp >= 58 and cp <= 64) or
             (cp >= 91 and cp <= 96) or (cp >= 123 and cp <= 126)):
         return True
-    cat = unicodedata.category(char)
-    if cat.startswith("P"):
-        return True
+    else:
+        cat = unicodedata.category(char)
+        if cat.startswith("P"):
+            return True
     return False
 
-class FullTokenizer(object):
-    """Runs end-to-end tokenziation."""
-
+class FullTokenizer():
+    # This is the class for end-to-end Tokenization
     def __init__(self, vocab_file, do_lower_case=True):
         self.vocab = load_vocab(vocab_file)
         self.basic_tokenizer = BasicTokenizer(do_lower_case=do_lower_case)
@@ -78,20 +76,13 @@ class FullTokenizer(object):
         return convert_tokens_to_ids(self.vocab, tokens)
 
 
-class BasicTokenizer(object):
-    """Runs basic tokenization (punctuation splitting, lower casing, etc.)."""
-
+class BasicTokenizer():
+    # Class for basic tokenization, spliting and lowercasing
     def __init__(self, do_lower_case=True):
-        """Constructs a BasicTokenizer.
-
-        Args:
-          do_lower_case: Whether to lower case the input.
-        """
         self.do_lower_case = do_lower_case
 
+    # first split text on space, and then split tokens on punctuations
     def tokenize(self, text):
-        """Tokenizes a piece of text."""
-        # text = convert_to_unicode(text)
         text = self._clean_text(text)
         orig_tokens = whitespace_tokenize(text)
         split_tokens = []
@@ -101,56 +92,51 @@ class BasicTokenizer(object):
                 token = self._run_strip_accents(token)
             split_tokens.extend(self._run_split_on_punc(token))
 
-        output_tokens = whitespace_tokenize(" ".join(split_tokens))
-        return output_tokens
+        return split_tokens
 
     def _run_strip_accents(self, text):
-        """Strips accents from a piece of text."""
+        # strip accents in text
         text = unicodedata.normalize("NFD", text)
-        output = []
+        output = ""
         for char in text:
             cat = unicodedata.category(char)
-            if cat == "Mn":
-                continue
-            output.append(char)
-        return "".join(output)
+            if cat != "Mn":
+                output += char
+        return output
 
     def _run_split_on_punc(self, text):
-        """Splits punctuation on a piece of text."""
+        # splits on punctuation in text, output: [text, punc, text ...]
         chars = list(text)
-        i = 0
         start_new_word = True
         output = []
-        while i < len(chars):
-            char = chars[i]
+        for char in chars:
             if _is_punctuation(char):
-                output.append([char])
+                output.append(char)
                 start_new_word = True
             else:
                 if start_new_word:
-                    output.append([])
-                start_new_word = False
-                output[-1].append(char)
-            i += 1
+                    output.append('')
+                    start_new_word = False
+                output[-1] += char
 
-        return ["".join(x) for x in output]
+        return output
 
     def _clean_text(self, text):
-        """Performs invalid character removal and whitespace cleanup on text."""
-        output = []
+        # Remove invalid character and whitespace
+        output = ""
         for char in text:
             cp = ord(char)
             if cp == 0 or cp == 0xfffd or _is_control(char):
-                continue
-            if _is_whitespace(char):
-                output.append(" ")
+                pass
+            elif _is_whitespace(char):
+                output += " "
             else:
-                output.append(char)
-        return "".join(output)
+                output += char
+        return output
 
 
-class WordpieceTokenizer(object):
-    """Runs WordPiece tokenization."""
+# From original authors
+class WordpieceTokenizer():
 
     def __init__(self, vocab, unk_token="[UNK]", max_input_chars_per_word=100):
         self.vocab = vocab
