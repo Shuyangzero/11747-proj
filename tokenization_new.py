@@ -168,23 +168,29 @@ class WordpieceTokenizer():
         # Comment: I don't think we need loop over text, as text is token itself
         # for token in text:
         chars = list(text)
+        # instead of convert string to list, we can directly operate on string and substrings
+        str = text
         if len(chars) > self.max_input_chars_per_word:
             output_tokens.append(self.unk_token)
         else:
             is_bad = False
             start = 0
             sub_tokens = []
+            # Apply sliding window to greedy search of longest substring
+            # start from the longest substring (string itself)
             while start < len(chars):
                 end = len(chars)
                 cur_substr = None
                 while start < end:
-                    substr = "".join(chars[start:end])
+                    substr = str[start:end]
                     if start > 0:
                         substr = "##" + substr
                     if substr in self.vocab:
                         cur_substr = substr
                         break
+                    # if the substring does not fit, move end to left by 1
                     end -= 1
+                # if none of the subword matches, the word it self will be UNK
                 if cur_substr is None:
                     is_bad = True
                     break
@@ -194,6 +200,6 @@ class WordpieceTokenizer():
             if is_bad:
                 output_tokens.append(self.unk_token)
             else:
-                output_tokens.extend(sub_tokens)
+                output_tokens = sub_tokens
 
         return output_tokens
