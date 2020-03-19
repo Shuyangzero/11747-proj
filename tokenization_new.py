@@ -135,7 +135,6 @@ class BasicTokenizer():
         return output
 
 
-# From original authors
 class WordpieceTokenizer():
 
     def __init__(self, vocab, unk_token="[UNK]", max_input_chars_per_word=100):
@@ -145,6 +144,7 @@ class WordpieceTokenizer():
 
     def tokenize(self, text):
         # Further tokenize word to sub-word if needed
+        # Comments from original authors
         """Tokenizes a piece of text into its word pieces.
 
         This uses a greedy longest-match-first algorithm to perform tokenization
