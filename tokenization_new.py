@@ -145,32 +145,19 @@ class WordpieceTokenizer():
     def tokenize(self, text):
         # Further tokenize word to sub-word if needed
         # Comments from original authors
-        """Tokenizes a piece of text into its word pieces.
-
-        This uses a greedy longest-match-first algorithm to perform tokenization
-        using the given vocabulary.
-
-        For example:
-          input = "unaffable"
-          output = ["un", "##aff", "##able"]
-
-        Args:
-          text: A single token or whitespace separated tokens. This should have
-            already been passed through `BasicTokenizer.
-
-        Returns:
-          A list of wordpiece tokens.
-        """
+        # For example:
+        #   input = "unaffable"
+        #   output = ["un", "##aff", "##able"]
 
         # text = convert_to_unicode(text)
 
         output_tokens = []
         # Comment: I don't think we need loop over text, as text is token itself
         # for token in text:
-        chars = list(text)
+        # chars = list(text)
         # instead of convert string to list, we can directly operate on string and substrings
         str = text
-        if len(chars) > self.max_input_chars_per_word:
+        if len(str) > self.max_input_chars_per_word:
             output_tokens.append(self.unk_token)
         else:
             is_bad = False
@@ -178,8 +165,8 @@ class WordpieceTokenizer():
             sub_tokens = []
             # Apply sliding window to greedy search of longest substring
             # start from the longest substring (string itself)
-            while start < len(chars):
-                end = len(chars)
+            while start < len(str):
+                end = len(str)
                 cur_substr = None
                 while start < end:
                     substr = str[start:end]
