@@ -47,6 +47,9 @@ class Sentihood_QA_M_Processor(DataProcessor):
             label = line[3]
             examples.append(InputExample(id, context, question, label))
             if i % 1000 == 0:
-                print (id, context, question, label)
+                print (id)
+                print (context)
+                print (question)
+                print (label)
 
         return examples

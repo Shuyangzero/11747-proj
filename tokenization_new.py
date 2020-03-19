@@ -144,6 +144,7 @@ class WordpieceTokenizer():
         self.max_input_chars_per_word = max_input_chars_per_word
 
     def tokenize(self, text):
+        # Further tokenize word to sub-word if needed
         """Tokenizes a piece of text into its word pieces.
 
         This uses a greedy longest-match-first algorithm to perform tokenization
@@ -164,12 +165,12 @@ class WordpieceTokenizer():
         # text = convert_to_unicode(text)
 
         output_tokens = []
-        for token in whitespace_tokenize(text):
-            chars = list(token)
-            if len(chars) > self.max_input_chars_per_word:
-                output_tokens.append(self.unk_token)
-                continue
-
+        # Comment: I don't think we need loop over text, as text is token itself
+        # for token in text:
+        chars = list(text)
+        if len(chars) > self.max_input_chars_per_word:
+            output_tokens.append(self.unk_token)
+        else:
             is_bad = False
             start = 0
             sub_tokens = []
@@ -194,4 +195,5 @@ class WordpieceTokenizer():
                 output_tokens.append(self.unk_token)
             else:
                 output_tokens.extend(sub_tokens)
+
         return output_tokens

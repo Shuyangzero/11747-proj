@@ -10,7 +10,7 @@ import torch
 from torch.nn.utils import clip_grad_norm_
 from torch.optim import Optimizer
 
-
+# warmup schedules for BERT Adam optimizer
 def warmup_cosine(x, warmup=0.002):
     if x < warmup:
         return x/warmup
@@ -32,8 +32,9 @@ SCHEDULES = {
     'warmup_linear':warmup_linear,
 }
 
-
+# Create a child class of Optimizer
 class BERTAdam(Optimizer):
+    # Fron original author
     """Implements BERT version of Adam algorithm with weight decay fix (and no ).
     Params:
         lr: learning rate
@@ -50,28 +51,22 @@ class BERTAdam(Optimizer):
     def __init__(self, params, lr, warmup=-1, t_total=-1, schedule='warmup_linear',
                  b1=0.9, b2=0.999, e=1e-6, weight_decay_rate=0.01,
                  max_grad_norm=1.0):
-        if not lr >= 0.0:
-            raise ValueError("Invalid learning rate: {} - should be >= 0.0".format(lr))
-        if schedule not in SCHEDULES:
-            raise ValueError("Invalid schedule parameter: {}".format(schedule))
-        if not 0.0 <= warmup < 1.0 and not warmup == -1:
-            raise ValueError("Invalid warmup: {} - should be in [0.0, 1.0[ or -1".format(warmup))
-        if not 0.0 <= b1 < 1.0:
-            raise ValueError("Invalid b1 parameter: {} - should be in [0.0, 1.0[".format(b1))
-        if not 0.0 <= b2 < 1.0:
-            raise ValueError("Invalid b2 parameter: {} - should be in [0.0, 1.0[".format(b2))
-        if not e >= 0.0:
-            raise ValueError("Invalid epsilon value: {} - should be >= 0.0".format(e))
+        # construct dict with default parameters
         defaults = dict(lr=lr, schedule=schedule, warmup=warmup, t_total=t_total,
                         b1=b1, b2=b2, e=e, weight_decay_rate=weight_decay_rate,
                         max_grad_norm=max_grad_norm)
+        # initialize optimizer with default dict
+        # params here is the params in the model to optimize
         super(BERTAdam, self).__init__(params, defaults)
 
     def get_lr(self):
         lr = []
+        # param_groups: a dictionary contains all param in model that need to be optimized
         print("l_total=",len(self.param_groups))
         for group in self.param_groups:
+            # for a given group
             print("l_p=",len(group['params']))
+            # loop over all parameter in that group
             for p in group['params']:
                 state = self.state[p]
                 if len(state) == 0:
@@ -84,11 +79,11 @@ class BERTAdam(Optimizer):
                 lr.append(lr_scheduled)
         return lr
 
-    def to(self, device):
-        """ Move the optimizer state to a specified device"""
-        for state in self.state.values():
-            state['exp_avg'].to(device)
-            state['exp_avg_sq'].to(device)
+    # def to(self, device):
+    #     """ Move the optimizer state to a specified device"""
+    #     for state in self.state.values():
+    #         state['exp_avg'].to(device)
+    #         state['exp_avg_sq'].to(device)
 
     def initialize_step(self, initial_step):
         """Initialize state with a defined step (but we don't have stored averaged).
