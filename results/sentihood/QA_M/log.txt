@@ -1,1 +1,1 @@
-epoch	global_step	loss	test_loss	test_accuracy
+epoch global_step loss	test_loss test_accuracy

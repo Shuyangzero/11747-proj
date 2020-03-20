@@ -22,12 +22,13 @@ from tqdm import tqdm, trange
 from tokenization import FullTokenizer
 from modeling import BertConfig, BertForSequenceClassification
 from optimization import BERTAdam
-from processor import (Semeval_NLI_B_Processor, Semeval_NLI_M_Processor,
-                       Semeval_QA_B_Processor, Semeval_QA_M_Processor,
-                       Semeval_single_Processor, Sentihood_NLI_B_Processor,
-                       Sentihood_NLI_M_Processor, Sentihood_QA_B_Processor,
-                       Sentihood_QA_M_Processor, Sentihood_single_Processor)
+# from processor import (Semeval_NLI_B_Processor, Semeval_NLI_M_Processor,
+#                        Semeval_QA_B_Processor, Semeval_QA_M_Processor,
+#                        Semeval_single_Processor, Sentihood_NLI_B_Processor,
+#                        Sentihood_NLI_M_Processor, Sentihood_QA_B_Processor,
+#                        Sentihood_QA_M_Processor, Sentihood_single_Processor)
 
+from processor_new import (Sentihood_QA_M_Processor)
 
 class InputFeatures(object):
     """A single set of features of data."""
